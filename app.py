@@ -320,11 +320,11 @@ async def download_files_and_run():
             args = f"tunnel --edge-ip-version auto --no-autoupdate --protocol http2 --logfile {os.path.join(FILE_PATH, 'boot.log')} --loglevel info --url http://localhost:{ARGO_PORT}"
         
         try:
-            #log_file = os.path.join(FILE_PATH, "cloudflared.log")
+            log_file = os.path.join(FILE_PATH, "cloudflared.log")
             #查看日志
-            #exec_cmd(f"nohup {os.path.join(FILE_PATH, 'bot')} {args} > {log_file} 2>&1 &")
-            exec_cmd(f"nohup {os.path.join(FILE_PATH, 'bot')} {args} >/dev/null 2>&1 &")
-            #print("bot is running, log saved to:", log_file)
+            exec_cmd(f"nohup {os.path.join(FILE_PATH, 'bot')} {args} > {log_file} 2>&1 &")
+            #exec_cmd(f"nohup {os.path.join(FILE_PATH, 'bot')} {args} >/dev/null 2>&1 &")
+            print("bot is running, log saved to:", log_file)
 
             time.sleep(2)
         except Exception as e:
