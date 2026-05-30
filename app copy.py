@@ -11,7 +11,6 @@ import subprocess
 import threading
 from threading import Thread
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import streamlit as st
 
 #https://share.streamlit.io/
 # Environment variables
