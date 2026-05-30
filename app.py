@@ -12,12 +12,14 @@ import threading
 from threading import Thread
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+
 #https://share.streamlit.io/
 # Environment variables
 UPLOAD_URL = os.environ.get('UPLOAD_URL', '')          # 节点或订阅上传地址,只填写这个地址将上传节点,同时填写PROJECT_URL将上传订阅，例如：https://merge.serv00.net
 PROJECT_URL = os.environ.get('PROJECT_URL', '')        # 项目url,需要自动保活或自动上传订阅需要填写,例如：https://www.google.com,
 AUTO_ACCESS = os.environ.get('AUTO_ACCESS', 'false').lower() == 'true'  # false关闭自动保活, true开启自动保活，默认关闭
-FILE_PATH = os.environ.get('FILE_PATH', './.cache')    # 运行路径,sub.txt保存路径
+FILE_PATH = os.path.dirname(os.path.abspath(__file__))
+#FILE_PATH = os.path.join(BASE_DIR, ".cache")
 SUB_PATH = os.environ.get('SUB_PATH', 'sub')           # 订阅token,默认sub，例如：https://www.google.com/sub
 UUID = os.environ.get('UUID', '792c9cd6-9ece-4ebc-ff02-86eaf8bf7e73')  # UUID,如使用哪吒v1,在不同的平台部署需要修改,否则会覆盖
 
@@ -26,7 +28,9 @@ UUID = os.environ.get('UUID', '792c9cd6-9ece-4ebc-ff02-86eaf8bf7e73')  # UUID,�
 #NEZHA_KEY = os.environ.get('NEZHA_KEY', '')            # v1哪吒的NZ_CLIENT_SECRET或v0哪吒agent密钥
 
 ARGO_DOMAIN = os.environ.get('ARGO_DOMAIN', 'ms.ai7g.eu.org')        # Argo固定隧道域名,留空即使用临时隧道
-ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiZjQ4MmU0OTQtNmMwYS00MTIyLTgxYTEtN2Q4MmU4NDVhMzY4IiwicyI6Ik1XRXpNREkzTm1FdE4yVmlaaTAwTUdRd0xUbGxNVGt0T0dFeU4yRTJNbUkwWVRFMiJ9')            # Argo固定隧道密钥,留空即使用临时隧道
+#ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiMjYzNzkyZjYtMzFiMC00NzU2LTg3OTktNzA1MGM2MzdhMWZkIiwicyI6Ill6Y3hOV05tTjJJdE1tSXpOeTAwTUdWaUxUZ3dPVEV0T0dSaU5HTmxaVFJtTW1WaSJ9')            # Argo固定隧道密钥,留空即使用临时隧道
+ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiZjQ4MmU0OTQtNmMwYS00MTIyLTgxYTEtN2Q4MmU4NDVhMzY4IiwicyI6Ik1XRXpNREkzTm1FdE4yVmlaaTAwTUdRd0xUbGxNVGt0T0dFeU4yRTJNbUkwWVRFMiJ9')            # Argo固定t31隧道密钥,留空即使用临时隧道
+
 ARGO_PORT = int(os.environ.get('ARGO_PORT', '2777'))   # Argo端口,使用固定隧道token需在cloudflare后台设置端口和这里一致
 CFIP = os.environ.get('CFIP', 'm2.u.cloudns.be')       # 优选ip或优选域名
 
@@ -38,6 +42,9 @@ PORT = int(os.environ.get('SERVER_PORT') or os.environ.get('PORT') or 8080) # �
 
 # Create running folder
 def create_directory():
+
+    print(FILE_PATH)
+
     print('\033c', end='')
     if not os.path.exists(FILE_PATH):
         os.makedirs(FILE_PATH)
@@ -137,6 +144,7 @@ def get_system_architecture():
 # Download file based on architecture
 def download_file(file_name, file_url):
     file_path = os.path.join(FILE_PATH, file_name)
+    print(f"Empowerment success for {FILE_PATH}: 775")
     try:
         response = requests.get(file_url, stream=True)
         response.raise_for_status()
@@ -162,8 +170,8 @@ def get_files_for_architecture(architecture):
         ]
     else:
         base_files = [
-            {"fileName": "web", "fileUrl": "https://amd64.ssss.nyc.mn/web"},
-            {"fileName": "bot", "fileUrl": "https://amd64.ssss.nyc.mn/2go"}
+            {"fileName": "web", "fileUrl": "https://aria.i7.cloudns.org/xray"},
+            {"fileName": "bot", "fileUrl": "https://aria.i7.cloudns.org/cloudflared"}
         ]
  
 
@@ -316,7 +324,7 @@ async def download_files_and_run():
             #查看日志
             #exec_cmd(f"nohup {os.path.join(FILE_PATH, 'bot')} {args} > {log_file} 2>&1 &")
             exec_cmd(f"nohup {os.path.join(FILE_PATH, 'bot')} {args} >/dev/null 2>&1 &")
-            print("bot is running, log saved to:", log_file)
+            #print("bot is running, log saved to:", log_file)
 
             time.sleep(2)
         except Exception as e:
@@ -373,138 +381,11 @@ async def extract_domains():
         except Exception as e:
             print(f'Error reading boot.log: {e}')
 
-# Upload nodes to subscription service
-def upload_nodes():
-    if UPLOAD_URL and PROJECT_URL:
-        subscription_url = f"{PROJECT_URL}/{SUB_PATH}"
-        json_data = {
-            "subscription": [subscription_url]
-        }
-        
-        try:
-            response = requests.post(
-                f"{UPLOAD_URL}/api/add-subscriptions",
-                json=json_data,
-                headers={"Content-Type": "application/json"}
-            )
-            
-            if response.status_code == 200:
-                print('Subscription uploaded successfully')
-        except Exception as e:
-            pass
-    
-    elif UPLOAD_URL:
-        if not os.path.exists(list_path):
-            return
-        
-        with open(list_path, 'r') as f:
-            content = f.read()
-        
-        nodes = [line for line in content.split('\n') if any(protocol in line for protocol in ['vless://', 'vmess://', 'trojan://', 'hysteria2://', 'tuic://'])]
-        
-        if not nodes:
-            return
-        
-        json_data = json.dumps({"nodes": nodes})
-        
-        try:
-            response = requests.post(
-                f"{UPLOAD_URL}/api/add-nodes",
-                data=json_data,
-                headers={"Content-Type": "application/json"}
-            )
-            
-            if response.status_code == 200:
-                print('Nodes uploaded successfully')
-        except:
-            return None
-    else:
-        return
-    
-# Send notification to Telegram
-def send_telegram():
-    if not BOT_TOKEN or not CHAT_ID:
-        # print('TG variables is empty, Skipping push nodes to TG')
-        return
-    
-    try:
-        with open(sub_path, 'r') as f:
-            message = f.read()
-        
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        
-        escaped_name = re.sub(r'([_*\[\]()~>#+=|{}.!\-])', r'\\\1', NAME)
-        
-        params = {
-            "chat_id": CHAT_ID,
-            "text": f"**{escaped_name}节点推送通知**\n{message}",
-            "parse_mode": "MarkdownV2"
-        }
-        
-        requests.post(url, params=params)
-        print('Telegram message sent successfully')
-    except Exception as e:
-        print(f'Failed to send Telegram message: {e}')
-
-# Generate links and subscription content
-async def generate_links(argo_domain):
-    meta_info = subprocess.run(['curl', '-s', 'https://speed.cloudflare.com/meta'], capture_output=True, text=True)
-    meta_info = meta_info.stdout.split('"')
-    ISP = f"{meta_info[25]}-{meta_info[17]}".replace(' ', '_').strip()
-
-    time.sleep(2)
-    VMESS = {"v": "2", "ps": f"{NAME}-{ISP}", "add": CFIP, "port": CFPORT, "id": UUID, "aid": "0", "scy": "none", "net": "ws", "type": "none", "host": argo_domain, "path": "/vmess-argo?ed=2560", "tls": "tls", "sni": argo_domain, "alpn": "", "fp": "chrome"}
- 
-    list_txt = f"""
-vless://{UUID}@{CFIP}:{CFPORT}?encryption=none&security=tls&sni={argo_domain}&fp=chrome&type=ws&host={argo_domain}&path=%2Fvless-argo%3Fed%3D2560#{NAME}-{ISP}
-  
-vmess://{ base64.b64encode(json.dumps(VMESS).encode('utf-8')).decode('utf-8')}
-
-trojan://{UUID}@{CFIP}:{CFPORT}?security=tls&sni={argo_domain}&fp=chrome&type=ws&host={argo_domain}&path=%2Ftrojan-argo%3Fed%3D2560#{NAME}-{ISP}
-    """
-    
-    with open(os.path.join(FILE_PATH, 'list.txt'), 'w', encoding='utf-8') as list_file:
-        list_file.write(list_txt)
-
-    sub_txt = base64.b64encode(list_txt.encode('utf-8')).decode('utf-8')
-    with open(os.path.join(FILE_PATH, 'sub.txt'), 'w', encoding='utf-8') as sub_file:
-        sub_file.write(sub_txt)
-        
-    print(sub_txt)
-    
-    print(f"{FILE_PATH}/sub.txt saved successfully")
-    
-    # Additional actions
-    send_telegram()
-    upload_nodes()
-  
-    return sub_txt   
- 
-# Add automatic access task
-def add_visit_task():
-    if not AUTO_ACCESS or not PROJECT_URL:
-        print("Skipping adding automatic access task")
-        return
-    
-    try:
-        response = requests.post(
-            'https://keep.gvrander.eu.org/add-url',
-            json={"url": PROJECT_URL},
-            headers={"Content-Type": "application/json"}
-        )
-        print('automatic access task added successfully')
-    except Exception as e:
-        print(f'Failed to add URL: {e}')
-
 # Clean up files after 90 seconds
 def clean_files():
     def _cleanup():
         time.sleep(90)  # Wait 90 seconds
         files_to_delete = [boot_log_path, config_path, list_path, web_path, bot_path, php_path, npm_path]
-        
-      
-      
-        
         for file in files_to_delete:
             try:
                 if os.path.exists(file):
