@@ -26,8 +26,9 @@ UUID = os.environ.get('UUID', '792c9cd6-9ece-4ebc-ff02-86eaf8bf7e73')  # UUID,�
 #NEZHA_KEY = os.environ.get('NEZHA_KEY', '')            # v1哪吒的NZ_CLIENT_SECRET或v0哪吒agent密钥
 
 ARGO_DOMAIN = os.environ.get('ARGO_DOMAIN', 'ms.ai7g.eu.org')        # Argo固定隧道域名,留空即使用临时隧道
-#ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiMjYzNzkyZjYtMzFiMC00NzU2LTg3OTktNzA1MGM2MzdhMWZkIiwicyI6Ill6Y3hOV05tTjJJdE1tSXpOeTAwTUdWaUxUZ3dPVEV0T0dSaU5HTmxaVFJtTW1WaSJ9')            # Argo固定隧道密钥,留空即使用临时隧道
-ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiMDgyNDhmNWYtZWY5MC00MmVlLWI5NjctY2JiNjY2ZDBlMzYyIiwicyI6Ik9UWTVNbUl4WTJVdFpXRTVaaTAwTURNeUxXRmhOakV0WVRabU5qaGlPVFEzWlRSaSJ9')            # Argo固定t31隧道密钥,留空即使用临时隧道
+ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiMjYzNzkyZjYtMzFiMC00NzU2LTg3OTktNzA1MGM2MzdhMWZkIiwicyI6Ill6Y3hOV05tTjJJdE1tSXpOeTAwTUdWaUxUZ3dPVEV0T0dSaU5HTmxaVFJtTW1WaSJ9')            # Argo固定隧道ms.ai7g.eu.org
+
+#ARGO_AUTH = os.environ.get('ARGO_AUTH', 'eyJhIjoiODdiZmI2YjUxMjVmM2UxMDExYTQ5YTY1MWYyMTUwMTkiLCJ0IjoiMDgyNDhmNWYtZWY5MC00MmVlLWI5NjctY2JiNjY2ZDBlMzYyIiwicyI6Ik9UWTVNbUl4WTJVdFpXRTVaaTAwTURNeUxXRmhOakV0WVRabU5qaGlPVFEzWlRSaSJ9')            # Argo固定t31隧道密钥,留空即使用临时隧道
 
 ARGO_PORT = int(os.environ.get('ARGO_PORT', '2777'))   # Argo端口,使用固定隧道token需在cloudflare后台设置端口和这里一致
 CFIP = os.environ.get('CFIP', 'm2.u.cloudns.be')       # 优选ip或优选域名
